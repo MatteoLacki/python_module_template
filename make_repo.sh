@@ -62,5 +62,6 @@ cd $PROJECT_NAME
 git init
 git add README.md setup.py setup.cfg Makefile __init__.py $PROJECT_NAME/__init__.py
 git commit -m "first commit"
-git remote add origin https://github.com/$USER/$PROJECT_NAME.git
+# git remote add origin https://github.com/$USER/$PROJECT_NAME.git
+git remote add origin git@github.com:$USER/$PROJECT_NAME.git
 git push -u origin master
