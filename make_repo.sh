@@ -8,8 +8,7 @@ echo "PROJECT_NAME:" $PROJECT_NAME
 echo "user:" $USER
 echo "email:" $EMAIL
 
-# Let github know we are up to something
-curl -u $USER https://api.github.com/user/repos -d '{"name":"'"$PROJECT_NAME"'"}'
+# curl -u $USER https://api.github.com/user/repos -d '{"name":"'"$PROJECT_NAME"'"}'
 
 # Create project structure
 mkdir -p $PROJECT_NAME/$PROJECT_NAME
@@ -37,10 +36,8 @@ setup(  name='$PROJECT_NAME',
                      'Topic :: Scientific/Engineering :: Chemistry',
                      'Programming Language :: Python :: 3.6',
                      'Programming Language :: Python :: 3.7'],
-        install_requires=['numpy',
-                          'networkx',
-                          'pandas',
-                          'scipy'])
+        # install_requires=['numpy']
+)
 EOF
 
 cat >> $PROJECT_NAME/setup.cfg << EOF
@@ -51,10 +48,14 @@ EOF
 cat >> $PROJECT_NAME/Makefile << EOF
 make:
 	echo "hello"
-test_pip:
-	twine -r test blablabla
-update_pip:
-	twine blablabla
+upload_test_pypi:
+	rm -rf dist || True
+	python setup.py sdist
+	twine -r testpypi dist/* 
+upload_pypi:
+	rm -rf dist || True
+	python setup.py sdist
+	twine upload dist/* 
 EOF
 
 # Create git repo and push the code there
@@ -62,6 +63,11 @@ cd $PROJECT_NAME
 git init
 git add README.md setup.py setup.cfg Makefile __init__.py $PROJECT_NAME/__init__.py
 git commit -m "first commit"
+
+# Create github repo
+gh repo create -y
+git branch -M main
+git push -u origin main
 # git remote add origin https://github.com/$USER/$PROJECT_NAME.git
-git remote add origin git@github.com:$USER/$PROJECT_NAME.git
-git push -u origin master
+# git remote add origin git@github.com:$USER/$PROJECT_NAME.git
+# git push -u origin master
