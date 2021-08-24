@@ -45,11 +45,11 @@ description-file = README.md
 EOF
 
 cat >> $PROJECT_NAME/Makefile << EOF
-PROJECT_NAME = '$PROJECT_NAME'
+PROJECT_NAME = $PROJECT_NAME
 install:
-	virtualenv ve_'$PROJECT_NAME'
-	ve_'$PROJECT_NAME'/bin/pip install IPython
-	ve_'$PROJECT_NAME'/bin/pip install -e .
+	virtualenv ve_$PROJECT_NAME
+	ve_$PROJECT_NAME/bin/pip install IPython
+	ve_$PROJECT_NAME/bin/pip install -e .
 upload_test_pypi:
 	rm -rf dist || True
 	python setup.py sdist
@@ -59,7 +59,7 @@ upload_pypi:
 	python setup.py sdist
 	twine upload dist/*
 py:
-	python -m IPython
+	ve_$PROJECT_NAME/bin/ipython
 EOF
 
 # Create git repo and push the code there
