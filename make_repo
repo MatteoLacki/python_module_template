@@ -7,16 +7,15 @@ EMAIL=${3-matteo.lacki@gmail.com}
 echo "PROJECT_NAME:" $PROJECT_NAME
 echo "user:" $USER
 echo "email:" $EMAIL
+echo
 
-# curl -u $USER https://api.github.com/user/repos -d '{"name":"'"$PROJECT_NAME"'"}'
-
-# Create project structure
+echo "Create project structure"
 mkdir -p $PROJECT_NAME/$PROJECT_NAME
 echo "### "$PROJECT_NAME"" >> $PROJECT_NAME/README.md
 touch $PROJECT_NAME/__init__.py
 touch $PROJECT_NAME/$PROJECT_NAME/__init__.py
 
-# Create setup.py and other module intended files
+echo "Create setup.py and other module intended files"
 cat >> $PROJECT_NAME/setup.py << EOF
 # This Python file uses the following encoding: utf-8
 from setuptools import setup, find_packages
@@ -46,8 +45,11 @@ description-file = README.md
 EOF
 
 cat >> $PROJECT_NAME/Makefile << EOF
-make:
-	echo "hello"
+PROJECT_NAME = '$PROJECT_NAME'
+install:
+	virtualenv ve_'$PROJECT_NAME'
+	ve_'$PROJECT_NAME'/bin/pip install IPython
+	ve_'$PROJECT_NAME'/bin/pip install -e .
 upload_test_pypi:
 	rm -rf dist || True
 	python setup.py sdist
@@ -55,7 +57,9 @@ upload_test_pypi:
 upload_pypi:
 	rm -rf dist || True
 	python setup.py sdist
-	twine upload dist/* 
+	twine upload dist/*
+py:
+	python -m IPython
 EOF
 
 # Create git repo and push the code there
@@ -64,10 +68,12 @@ git init
 git add README.md setup.py setup.cfg Makefile __init__.py $PROJECT_NAME/__init__.py
 git commit -m "first commit"
 
+# make sure we use ssh instead of https
+gh config set git_protocol ssh -h github.com
+
 # Create github repo
 gh repo create -y
 git branch -M main
 git push -u origin main
-# git remote add origin https://github.com/$USER/$PROJECT_NAME.git
-# git remote add origin git@github.com:$USER/$PROJECT_NAME.git
-# git push -u origin master
+
+
